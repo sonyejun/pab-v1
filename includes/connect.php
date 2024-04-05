@@ -15,7 +15,13 @@ foreach($env as $value)
 }
 
 $connect = mysqli_connect(
-  DB_HOST, 
-  DB_USERNAME, 
-  DB_PASSWORD, 
-  DB_DATABASE);
+  "localhost", 
+  "root", 
+  "root", 
+  "brickmmo_pab");
+
+if (!$connect) {
+  die("Fail to connect with database: " . mysqli_connect_error());
+}
+
+mysqli_set_charset( $connect, 'UTF8' );

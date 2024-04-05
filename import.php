@@ -43,7 +43,7 @@ foreach($stores['storesDirectory'] as $key => $country)
     {
         $_certified = $store['certified']? 1: 0;
         $_storeInfo = mysqli_real_escape_string($connect, $store['additionalInfo']);
-        $query = 'INSERT INTO stores ( name, phone, info, certified, reference_id ) VALUES ( "'.$store['name'].'", "'.$store['phone'].'", "'.$_storeInfo.'", "'.$_certified.'", "'.$country['id'].'")';
+        $query = 'INSERT INTO stores ( name, phone, info, certified, reference_id, storeUrl ) VALUES ( "'.$store['name'].'", "'.$store['phone'].'", "'.$_storeInfo.'", "'.$_certified.'", "'.$country['id'].'","'.$store['storeUrl'].'")';
         $result = mysqli_query($connect, $query);
     }
 }

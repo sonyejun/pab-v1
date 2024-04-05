@@ -139,8 +139,9 @@ button.btn{
     padding: 36px 56px;
 }
 .main-result-wrap .result-section-wrap .result-filter-button-wrap{
-    display: flex;
-    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    gap: 1.5rem;
     margin-bottom: 36px;
 }
 
@@ -158,6 +159,9 @@ button.btn{
 .main-result-wrap .result-section-wrap .result-content-wrap .result-row{
     display: flex;
     justify-content: space-between;
+}
+.main-result-wrap .result-section-wrap .result-content-wrap .result-row + .result-row{
+    margin-top: 20px;
 }
 .main-result-wrap .result-section-wrap .result-content-wrap .result-row .result-left-section{
     display: flex;
