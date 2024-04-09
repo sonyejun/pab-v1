@@ -20,7 +20,6 @@ if ($filter != 'all') {
 if ($searchTerm) {
     $query .= " WHERE name LIKE '%".$searchTerm."%'";
     $type = 'search';
-    // $keyword = $searchTerm;
 }
 
 $query .= " ORDER BY stores.id DESC";
@@ -49,14 +48,6 @@ $data = array(
     'pages'=> array()
 );
 
-// // 페이지 번호만 포함되도록 수정
-// for($page = 1; $page <= $total_pages; $page++){
-//     $data['pages'][] = array(
-//         'page' => $page,
-//         // 'url'=>"?$type=$keyword$&page=$page"
-
-//     );
-// }
 while ($row = mysqli_fetch_assoc($result)) {
     $data['pages'][] = $row;
 }

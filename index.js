@@ -1,18 +1,17 @@
-//alert(12121212121);
-// var currentPage;
+
+// Set default page value
 var currentPage=1;
 var totalPages = 0;
 var pageSize = 10;
 
+// Add active class(pagination button) function
 function addActiveClassToPageElement(pageNumber) {
     var currentPageElement = document.querySelector('[data-page="' + pageNumber + '"]');
-    
-    // console.log(currentPageElement, pageNumber)
     currentPageElement.classList.add('active');
 }
 
+// Get page data function
 window.getPageData =  function(type,keyword,page){
-    // console.log(type,keyword,page);
     var regionText ='';
     if(type === "filter"){
         switch(keyword){
@@ -40,15 +39,16 @@ window.getPageData =  function(type,keyword,page){
         }
     }
       
-    console.log(type,keyword,page)
+    // console.log(type,keyword,page)
+    // Request to getting data from database.php
     var xhr = new XMLHttpRequest();
-    
     xhr.open('GET', 'database.php?'+type+'=' + encodeURIComponent(keyword)+'&page='+page, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var response = JSON.parse(xhr.responseText);
             var element ='';
             console.log(response)
+            //make store info elements
             response.pages.forEach(function(data){
                 element += `<div class="result-row">
                 <div class="result-left-section">
@@ -61,7 +61,7 @@ window.getPageData =  function(type,keyword,page){
                 <span class="result-store-phone">(Phone : `+data.phone+`)</span>
                 </p>
                 </div>
-                <button class="go-btn">Go</button>
+                <a href="`+data.storeUrl+`"class="go-btn">Go</a>
                 </div>
                 `
             });
@@ -69,10 +69,9 @@ window.getPageData =  function(type,keyword,page){
             document.querySelector('.result-keyword').innerText = type === "filter" ? regionText : keyword;
             document.querySelector('.result-quantity').innerText = "("+response.total_items+")";
     
-            // 전체 페이지 수 업데이트
+            // total page number update
             totalPages = response.total_pages;
-            // currentPage = response.page
-            
+            // Call update pagination function
             updatePagination(type,keyword,page);
             addActiveClassToPageElement(page);
         }
@@ -82,7 +81,7 @@ window.getPageData =  function(type,keyword,page){
 }
 
 
-
+// Next and previous page function
 function getNextPage(type, keyword) {
     currentPage = Math.min(currentPage + pageSize, totalPages);
     getPageData(type, keyword, currentPage);
@@ -92,7 +91,7 @@ function getPreviousPage(type, keyword) {
     currentPage = Math.min(currentPage - pageSize, totalPages);
     getPageData(type, keyword, currentPage);
 }
-
+//Make and update pagination function
 function updatePagination(type, keyword,page) {
     var paginationLinks = '';
     var startPage = Math.max(1, currentPage - Math.floor(pageSize / 2));
@@ -119,60 +118,49 @@ function updatePagination(type, keyword,page) {
     document.getElementById('pagination').innerHTML = paginationLinks;
 }
 
+// Working when the window is loaded
 window.onload = function () {
-    // var xhr = new XMLHttpRequest();
     let filterBtn = document.querySelectorAll('.filter-btn');
     var searchInput = document.querySelector('.search-input');
     var searchBtn =document.querySelector('.search-btn');
     
-    
-    // var currentPage;
-    //all btn function
+    //Region filter button click function 
     document.querySelector('.all-btn').addEventListener('click',function(){
         document.querySelector('.result-filter-button-wrap').classList.remove('none');
         document.querySelector('[name=all]').click();
         searchInput.value ='';
     });
 
-    //filter button click function
+    //Filter button click function
     filterBtn.forEach(function(filter){
         filter.addEventListener('click',function(e){
-            // console.log("filter");
             document.querySelector('.all-btn').classList.add('none');
             filterBtn.forEach(function(btn){
                 btn.classList.remove('active');
             });
             filter.classList.add('active');
             var keyword = e.target.name;
-            // currentPage = 1;
             getPageData("filter",keyword, currentPage);
             
         });
     });
     document.querySelector('[name=all]').click();
     
-    //search
-    
+    //Search button click function
     searchBtn.addEventListener('click',function(){
-        // console.log("search");
-        // document.querySelector('[name=all]').click();
         document.querySelector('.all-btn').classList.remove('none');
         document.querySelector('.result-filter-button-wrap').classList.add('none');
         var keyword = searchInput.value.trim();
-        // currentPage = 1;
         getPageData("search",keyword,currentPage);
-        
-
     });
-
     
+    //Enter keyup (instead of click the button) function
     searchInput.addEventListener("keyup",function(event){
         if(event.key === "Enter"){
             searchBtn.click();
         }
     });
 
-   
     setTimeout(function() {
         addActiveClassToPageElement(currentPage);
     }, 100); 
