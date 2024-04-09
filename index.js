@@ -39,10 +39,10 @@ window.getPageData =  function(type,keyword,page){
         }
     }
       
-    // console.log(type,keyword,page)
+    console.log(type,keyword,page)
     // Request to getting data from database.php
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'database.php?'+type+'=' + encodeURIComponent(keyword)+'&page='+page, true);
+    xhr.open('GET', 'database.php?'+type+'='+ encodeURIComponent(keyword)+'&page='+page, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var response = JSON.parse(xhr.responseText);
@@ -130,7 +130,7 @@ window.onload = function () {
         document.querySelector('[name=all]').click();
         searchInput.value ='';
     });
-
+    
     //Filter button click function
     filterBtn.forEach(function(filter){
         filter.addEventListener('click',function(e){
@@ -140,7 +140,7 @@ window.onload = function () {
             });
             filter.classList.add('active');
             var keyword = e.target.name;
-            getPageData("filter",keyword, currentPage);
+            getPageData("filter",keyword, 1);
             
         });
     });
@@ -153,7 +153,7 @@ window.onload = function () {
         var keyword = searchInput.value.trim();
         getPageData("search",keyword,currentPage);
     });
-    
+
     //Enter keyup (instead of click the button) function
     searchInput.addEventListener("keyup",function(event){
         if(event.key === "Enter"){

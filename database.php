@@ -18,8 +18,12 @@ if ($filter != 'all') {
 }
 // Case2. keyword searching
 if ($searchTerm) {
-    $query .= " WHERE name LIKE '%".$searchTerm."%'";
-    $type = 'search';
+    if ($filter != 'all') {
+        $query .= " AND stores.name LIKE '%".$searchTerm."%'";
+    } else {
+        // If no filter condition, use "WHERE" to add the search condition
+        $query .= " WHERE stores.name LIKE '%".$searchTerm."%'";
+    }
 }
 
 $query .= " ORDER BY stores.id DESC";
