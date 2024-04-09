@@ -7,33 +7,61 @@ include('includes/functions.php');
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
 
-// 필터 값에 따라 적절한 쿼리 수행
-if ($filter == 'all') {
-    $query = "SELECT *
-              FROM stores";
-} else {
-    $query = "SELECT stores.*
-              FROM stores
-              JOIN countries ON stores.reference_id = countries.reference_id
-              JOIN regions ON countries.region_id = regions.id
-              WHERE regions.name = '".$filter."'";
-}
+// Case1. region filter button click
+$query = "SELECT stores.*
+          FROM stores
+          JOIN countries ON stores.reference_id = countries.reference_id
+          JOIN regions ON countries.region_id = regions.id";
 
-// 검색어가 있는 경우에는 쿼리에 검색어 조건 추가
+if ($filter != 'all') {
+    $query .= " WHERE regions.name = '".$filter."'";
+}
+// Case2. keyword searching
 if ($searchTerm) {
     $query .= " WHERE name LIKE '%".$searchTerm."%'";
+    $type = 'search';
+    // $keyword = $searchTerm;
 }
 
-$query .= " ORDER BY id DESC";
+$query .= " ORDER BY stores.id DESC";
 
+
+//pagination
+$items_per_page = 10;
+$total_items_query = "SELECT COUNT(*) AS total_items FROM ($query) AS total_query";
+$total_items_result = mysqli_query($connect, $total_items_query);
+$total_items_row = mysqli_fetch_assoc($total_items_result);
+$total_items = $total_items_row['total_items'];
+
+
+//current page
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($current_page - 1) * $items_per_page;
+$query .= " LIMIT $items_per_page OFFSET $offset";
 $result = mysqli_query($connect, $query);
 
-$data = array();
+
+//make page
+$total_pages = ceil($total_items/$items_per_page);
+$data = array(
+    'total_pages' => $total_pages,
+    'total_items' => $total_items,
+    'pages'=> array()
+);
+
+// // 페이지 번호만 포함되도록 수정
+// for($page = 1; $page <= $total_pages; $page++){
+//     $data['pages'][] = array(
+//         'page' => $page,
+//         // 'url'=>"?$type=$keyword$&page=$page"
+
+//     );
+// }
 while ($row = mysqli_fetch_assoc($result)) {
-    $data[] = $row;
+    $data['pages'][] = $row;
 }
 
-// JSON 형식으로 데이터 전송
+// send data as json type
 header('Content-Type: application/json');
 echo json_encode($data);
 exit;
